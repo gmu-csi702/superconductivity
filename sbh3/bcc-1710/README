@@ -1,0 +1,33 @@
+++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+running the lapw codes from Dr.Papa
+===========================
+These scripts stitch together the different lapw codes.
+
+It's important to make sure the CDN1 and INFILEs in 
+lat_src are set up correctly for the correct combination.
+
+run.lapw.lat works for a single lattice constant
+run.lapw.multi works for range of lattice constants,
+running them simultaneously 
+run.lapw.seq works for a range of lattice constants
+but in sequence.
+
+The range and step size of the lattice constants can be 
+modified.
+
+To run, after correcting the lat_src files, first set the 
+lattice constant values to calculate in run.lapw.multi
+then: ./run.lapw.multi > &log& 
+
+The energyfit directory has the scripts necessary to
+calculate the energies and pressure fit to smaller 
+lattice constants for a smoother plot. Set the path to the 
+calculated lattice points in the file "energyfit" and run as:
+./energyfit
+
+
+============================
+S.Silayi 05-23-2018
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++

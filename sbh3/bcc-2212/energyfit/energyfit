@@ -1,0 +1,87 @@
+#!/bin/bash
+
+#Extract the converged eneries for each 
+#lattice constant and plot 
+#Total Energy vs Lattice constant.
+#Fits additional points for total energy 
+#and pressure and plots
+
+rm efile
+for i in $(seq 7.0 0.2 8.4)
+do
+ if [ -e ../lat$i ]; then	
+   echo "$i $(grep 'TOTAL ENERGY=' ../"lat"$i/INFO.iter | tail -n1)" >> efile 
+ fi
+done
+
+awk  '{print $1,$5 }' efile > etot.sbh3    
+
+rm efile
+rm *out*
+
+cat > fit5.dat << EOF
+etot.sbh3
+    2    3    2    2
+    0    2    1    2    3
+y
+fitout.sbh3lapw
+
+EOF
+
+
+./mehlmak
+
+cf=$(sed -n 2p fitout.sbh3lapw)
+echo " $cf "
+cat > coeff.inp << EOF
+1 0 
+$cf
+  6.4   8.9  0.05
+
+EOF
+
+./polyfit
+
+cat > e_plot.gnu << EOF
+set term eps
+set output "sbh3_etot.eps"
+set title "SbH_3 Total Energy"
+set xlabel "a (A)"
+set ylabel "energy (Ry)"
+
+plot 'energyfit.out' u 1:3 w l  notitle
+
+EOF
+
+cat > p_plot.gnu << EOF
+set term eps
+set output "sbh3_pressure.eps"
+set title "SbH_3 Pressure"
+set xlabel "a (A)"
+set ylabel "pressure (Mbar)"
+set grid
+
+plot 'pressfit.out' u 1:3 w l  notitle
+
+EOF
+
+cat > etot_plot.gnu << EOF
+set term eps
+set output "sbh3_etot_lattice.eps"
+set title "SbH_3 Total Energy"
+set xlabel "a (A)"
+set ylabel "Energy/Atom (Ry)"
+set xrange[6.5:8.5]
+set xtics 6.4,0.2,8.4
+plot 'etot.sbh3' u 1:2 w p pt 4 t "Calculated Energies", "energyfit.out" u 1:3 w l t "Fit Energies"
+
+EOF
+
+gnuplot etot_plot.gnu
+gnuplot e_plot.gnu
+gnuplot p_plot.gnu
+
+
+#rm *.gnu*
+
+

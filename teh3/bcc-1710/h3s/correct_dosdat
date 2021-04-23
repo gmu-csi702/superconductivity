@@ -1,0 +1,29 @@
+#!/bin/bash
+l=54
+
+for i in $(seq 5.4 0.2 7.4)
+do
+cd gyo-$l/
+
+cat>dosdat.out<<EOF
+   11    4  101
+Te  H3                                      2
+  9.00 55.00
+   1   1
+   $i         1    2
+    8    9   11    1    0
+ -0.600      0.00200  3.500       0.00000   0.00000   0.00000   0.00000
+EOF
+
+cp dosplot.gnu dosplot.gnu.1
+./dosapwn
+
+mv dosplot.gnu.1 dosplot.gnu
+
+gnuplot dosplot.gnu
+
+cd ../
+l=$(( $l + 2 ))
+
+done
+

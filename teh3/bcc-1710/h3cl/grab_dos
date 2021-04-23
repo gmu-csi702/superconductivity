@@ -1,0 +1,14 @@
+#!/bin/bash
+
+el="Te"
+
+for i in $(seq 54 02 72)
+do
+	if [ -e gyo-$i ]; then
+		tail -n 2 gyo-$i/dosapw.itp | head -n 1 >> pdos.$el
+		tail -n 2 gyo-$i/dosapw.itp | tail -n 1 >> pdos.H
+
+	fi
+
+done
+

@@ -1,0 +1,9 @@
+rm: cannot remove 'BRH*': No such file or directory
+MAIN:  ATOMIC- AND L-WEIGHTS ARE SET
+rm: cannot remove 'RECIP': No such file or directory
+rm: cannot remove 'CORECG': No such file or directory
+rm: cannot remove 'EIG*': No such file or directory
+rm: cannot remove 'IO*': No such file or directory
+rm: cannot remove 'PLFILE': No such file or directory
+rm: cannot remove 'W*': No such file or directory
+rm: cannot remove 'fort*': No such file or directory

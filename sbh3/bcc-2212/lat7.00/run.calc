@@ -1,0 +1,23 @@
+#!/bin/bash
+
+ i=7.00 
+ 
+cdn1=$(ls -t CDN* | head -1)
+
+mv CDN1 CDN1.iter
+mv $cdn1 CDN1
+mv INFILE  INFILE.iter
+mv INFO INFO.iter
+echo "$i  $(grep 'TOTAL ENERGY=' INFO.iter | tail -n1 )" >> ../energy_lattice
+
+cp INFILE.run INFILE
+
+sed -i "5 c\ $i " INFILE
+sed -i "39 c\ -1.000     3.000" INFILE
+ 
+./lapw.com
+
+#rm lapw4at-$i
+
+cp INFILE INFILE.dos
+cp INFO INFO.dos

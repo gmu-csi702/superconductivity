@@ -1,0 +1,4 @@
+dos.in_file = dos.in.all
+bulkmod_vol_file = bulkmodfit
+output_file = h3cl_freq
+initial_freq = 1 2 2

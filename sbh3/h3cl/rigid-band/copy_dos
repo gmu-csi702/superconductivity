@@ -1,0 +1,13 @@
+#!/bin/bash
+
+el=sbh3
+
+mkdir -p dosplots_$el
+
+for i in $(seq 6.2 0.1 6.4)
+do
+	if [ -e gyo-$i ]; then
+		cp gyo-$i/dosdatall.eps dosplots_$el/dosdatall.$i.eps
+  	fi 
+done
+

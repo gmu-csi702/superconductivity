@@ -1,0 +1,19 @@
+rm: cannot remove 'BRH*': No such file or directory
+forrtl: No space left on device
+forrtl: severe (38): error during write, unit 19, file /home/ssilayi/lapw/ih3/1785_kpts/lat7.5/./WORK19
+Image              PC                Routine            Line        Source             
+lapw4at            000000000053F412  Unknown               Unknown  Unknown
+lapw4at            000000000053E612  Unknown               Unknown  Unknown
+lapw4at            00000000004F41B2  Unknown               Unknown  Unknown
+lapw4at            00000000004B7759  Unknown               Unknown  Unknown
+lapw4at            00000000004B7046  Unknown               Unknown  Unknown
+lapw4at            00000000004E60F9  Unknown               Unknown  Unknown
+lapw4at            00000000004E20A2  Unknown               Unknown  Unknown
+lapw4at            000000000049FC28  Unknown               Unknown  Unknown
+lapw4at            000000000047662E  Unknown               Unknown  Unknown
+lapw4at            00000000004B0A4E  Unknown               Unknown  Unknown
+lapw4at            000000000042811A  Unknown               Unknown  Unknown
+lapw4at            0000000000408A6E  Unknown               Unknown  Unknown
+lapw4at            00000000004035D6  Unknown               Unknown  Unknown
+libc.so.6          00007FD5D9F2E46A  Unknown               Unknown  Unknown
+lapw4at            00000000004034E9  Unknown               Unknown  Unknown

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+for i in $(seq 5.4 0.1 8.4)
+do
+	mkdir lat$i
+	cp ../lat$i/{SPCGRP,CDN1,INFILE.dos} lat$i/.
+done

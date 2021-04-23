@@ -1,0 +1,99 @@
+#!/bin/bash
+
+#Extract the converged eneries for each 
+#lattice constant and plot 
+#Total Energy vs Lattice constant.
+#Fits additional points for total energy 
+#and pressure and plots
+
+rm efile
+#set path to directories for calculations 
+#for the range of lattice constants
+path="../"
+
+#the sequence should include lattice constants 
+#already calculated
+lat = 5.4
+for i in $(seq 54 2 84)
+do
+	if [ -e $path"lat"$i/energy.$i ]; then
+		echo "$lat $( tail -n 1 $path"lat"$i/energy.$i )" >> efile 
+	fi
+  lat=$(( $lat + 0.2 ))
+done
+
+awk  '{print $1,$5 }' efile > etot.sbh3    
+
+rm efile
+rm *out*
+
+
+#create input files and run fitting codes
+cat > fit5.dat << EOF
+etot.sbh3
+    2    3    2    2
+    0    2    1    2    3
+y
+fitout.teh3lapw
+
+EOF
+
+
+./mehlmak
+
+cf=$(sed -n 2p fitout.teh3lapw)
+echo " $cf "
+cat > coeff.inp << EOF
+1 0 
+$cf
+  5.4   8.0  0.2
+
+EOF
+
+./polyfit
+
+
+#plot fitting results and clean up
+cat > e_plot.gnu << EOF
+set term eps
+set output "teh3_etot.eps"
+set title "TeH_3 Total Energy"
+set xlabel "a (A)"
+set ylabel "energy (Ry)"
+
+plot 'energyfit.out' u 1:3 w l  notitle
+
+EOF
+
+cat > p_plot.gnu << EOF
+set term eps
+set output "teh3_pressure.eps"
+set title "TeH_3 Pressure"
+set xlabel "a (A)"
+set ylabel "energy (Ry)"
+
+plot 'pressfit.out' u 1:3 w l  notitle
+
+EOF
+
+cat > etot_plot.gnu << EOF
+set term eps
+set output "teh3_etot_lattice.eps"
+set title "TeH_3 scf-Convergence"
+set xlabel "a (A)"
+set ylabel "Energy/Atom (Ry)"
+set xrange[5.3:8.2]
+
+plot 'etot.teh3' u 1:2 w p pt 4 t "Calculated Energies", "energyfit.out" u 1:3 w l t "Fit Energies"
+
+EOF
+
+
+gnuplot etot_plot.gnu
+gnuplot e_plot.gnu
+gnuplot p_plot.gnu
+
+
+rm *.gnu*
+
+

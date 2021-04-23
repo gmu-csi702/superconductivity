@@ -1,0 +1,10 @@
+#!/bin/bash
+
+i=7.0
+cp INFILE.iter INFILE
+sed -i "5 c\ $i " INFILE
+cp ~/lapw/lapw4at lapw4at-$i
+sed -i "3 c\ ~/lapw/sbh3/bcc/lat$i/lapw4at-$i  > /dev/null" lapw.com 
+./lapw.com
+
+

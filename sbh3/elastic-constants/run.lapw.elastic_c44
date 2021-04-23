@@ -1,0 +1,32 @@
+#!/bin/bash
+
+
+#loop over the lattice constants of interest
+#for i in $(seq 6.0 0.2 6.8)
+for i in  7.0 
+do
+    #cp -r a_ini  lat$i
+
+    #cd lat$i/c11-c12/
+    cd lat$i/c44/
+
+    for j in e0000  e0005  e001  e002   e004   e006  #e007  e008
+    do
+
+	cp CDN1.conv  $j/CDN1
+        cd $j
+        #update lattice constants in scripts
+        sed -i "5 c\ $i " INFILE
+	
+	pwd
+
+	cp /home/phchang/Research_GMU/High_Tc/lapw.com .
+        ./lapw.com
+        
+        cdn1=$(ls -t CDN* | head -1)
+        cp $cdn1  ../CDN1.conv
+        # save CDN for next closest calculation    
+	cd ../
+    done
+    cd ../../
+done

@@ -1,0 +1,27 @@
+#!/bin/bash
+
+#Extract the converged eneries for each 
+#lattice constant and plot 
+#Total Energy vs Lattice constant.
+rm etot_lattice
+for i in $(seq 7.0 0.1 8.4)
+do
+ echo "$i  $(grep 'TOTAL ENERGY=' INFO.iter | tail -n1 )" >> lat$i/etot_lattice
+done
+
+cat > etot_plot.gnu << EOF
+set term eps
+set output "sbh3_etot_lattice.eps"
+set title "SbH_3 scf-Convergence"
+set xlabel "a (A)"
+set ylabel "Energy/Atom (Ry)"
+
+plot 'etot_lattice' u ($1/4):5 w l notitle
+
+EOF
+
+gnuplot etot_plot
+
+rm etot_plot
+
+

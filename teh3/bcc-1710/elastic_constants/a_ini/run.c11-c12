@@ -1,0 +1,57 @@
+#!/bin/bash
+
+#loop over the lattice constants of interest
+#for i in $(seq 6.0 0.2 6.6)
+#do
+i=6.6
+    cp -r c11-c12 c11-c12.$i
+    cd  c11-c12.$i
+
+    pwd
+ 
+    for j in e0000  e0005  e001  e002  e003  e004   e006  e007  #e008  e009 e010
+    do
+
+	cp CDN1.conv  $j/CDN1
+	cp lapw.com  $j/lapw.com
+        cd $j
+
+        #update lattice constants in scripts
+        sed -i "5 c\ $i " INFILE	
+        sed -i "13 c\  601 52.0     1.70000   0.015          Te Atom" INFILE
+        sed -i "42 c\    1  0   19.0      0.002      0.000     0.000     NWNDW,SWNDN(S.C.),ZFILL,T " INFILE
+        sed -i "43 c\ -1.000     3.000" INFILE
+	pwd
+
+        ./lapw.com
+
+        #check for convergence
+        conv="CONVERGED"
+        log="INFO"        
+        n=0
+        while ! grep -q $conv $log
+        do
+            cdn1=$(ls -t CDN* | head -1)
+            cp $cdn1 CDN1
+            ./lapw.com
+
+            n=$(( $n + 1 ))
+            if [ $n == 3 ]; then
+               echo "NOT COVNERGING for lat$i  strain $j!"
+               exit 
+            fi
+        done
+ 
+        cdn1=$(ls -t CDN* | head -1)
+        cp $cdn1  ../CDN1.conv
+        # save CDN for next closest calculation   
+
+	cd ../
+    done
+
+    cd ../../
+
+#done
+
+
+

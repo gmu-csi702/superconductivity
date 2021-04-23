@@ -1,0 +1,38 @@
+#!/bin/bash
+
+cp -r ../gyo_src/ gyo
+
+cd gyo/
+
+cat > input.dat << EOF
+IH3                  LAPW                   2     
+I
+  435   0.0
+  480   10   32  1.7000     10000
+H
+  435   0.0
+  400   10   32  1.0000     10000
+
+EOF
+
+cp ../POT lapwpot.dat
+
+./interpot >/dev/null
+
+cp apwpot.dat pot.in
+
+head -n2 ../dosapw.itp > dos.in
+echo "   126.904    500.     0.10    1334.6">> dos.in 
+tail -n1 ../dosapw.itp >>  dos.in
+echo "   1.0079   1750.     0.10    1334.6" >> dos.in
+
+./gyond >/dev/null
+
+rm fort*
+
+cd ../
+
+
+
+
+

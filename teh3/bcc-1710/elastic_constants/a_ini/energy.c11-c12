@@ -1,0 +1,24 @@
+#!/bin/bash
+
+#loop over the lattice constants of interest
+for i in $(seq 6.0 0.2 6.6)
+do
+#i=6.0
+    cd  c11-c12.$i
+
+    pwd
+ 
+    for j in e0000  e0005  e001  e002  e003  e004   e006  e007  #e008  e009 e010
+    do
+
+	E=$(grep "TOTAL ENERGY="  $j/INFO | tail -n 1)
+	echo "$j  $E" >> c11-c12.$i.energy
+	
+    done
+
+    cd ../
+
+done
+
+
+

@@ -1,0 +1,29 @@
+#!/bin/bash
+
+el="I"
+title=( "l" "SIN"  "DOS-PRODUCT" "ETA" "rs" "ef"  "nef" ) 
+n=2
+for i in ${!title[@]}  
+do 
+  col=${title[$i]}
+  printf "$col\n" > $col
+  printf "a \t $el-l=0 $el-l=1 $el-l=2 H-l=0 \n" >> $col
+  echo "getting $col ..."
+
+  for lat in $(seq 5.5 0.1 8.3 )
+  do
+	  if [ -e "gyo-$lat" ]; then
+		
+		  path="gyo-$lat"
+		  printf "$lat \t" >> $col
+		  awk -v x=$n '{print $x }' $path/fort.25 | head -n 4 | paste -s >> $col
+          fi
+  done
+ 
+  mv $col $col.txt
+
+  n=$(( $n + 1 ))
+
+done
+
+

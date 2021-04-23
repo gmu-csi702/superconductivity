@@ -1,0 +1,54 @@
+#!/bin/bash
+i=5.4 
+el=IH_3 
+pt=6
+
+#create directory for each lattice 
+#constant and copy in source files/scripts
+ cd lat$i
+ cp ../lat_src/run.* .
+ cp ~/lapw/lapw4at lapw4at-$i 
+
+cp INFILE.run INFILE
+
+sed -i "5 c\ $i " INFILE
+
+sed -i "39 c\ -0.500     5.000" INFILE
+ 
+./lapw.com
+
+#rm lapw4at-$i
+
+cp INFILE INFILE.dos
+cp INFO INFO.dos
+
+#update lattice constants in scripts
+ sed -i "2 c\ i=$i " run.dos
+ sed -i "3 c\ el=$el " run.dos
+ sed -i "4 c\ pt=$pt " run.dos
+ sed -i "3 c\ i=$i " run.bands
+
+
+
+#run in sequence (iterate, calculate, 
+#get dos, Hopfiled factor and bands
+ ./run.dos 
+ ./run.gyo
+ ./run.bands
+ 
+#clean up
+ mkdir -p dos/
+ mv dos* dos/.
+ mv ferv_* dos/.
+ mv QLMT.dos  dos/QLMT
+ mv qlmtconvert dos/.
+ mkdir -p bands/
+ mv band* bands/.
+ mv QLMT.bands  bands/QLMT
+ cp dos/dosdat.out bands/.
+ rm run.*
+
+ cd ../
+
+ echo "done $i"
+

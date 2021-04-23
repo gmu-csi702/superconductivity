@@ -1,0 +1,226 @@
+                                                                                          CP-TIME           0.000
+
+ Iterations will be stopped when the energy change is less than  1.00000E-05
+ and the distance between charge densities is less than 8.00000E-02
+
+1   L A P W   VERSION  L A P W 5 0 0  
+
+ RUN NUMBER=  1
+ PRINT LEVEL= 3
+ DUMP LEVEL= -2
+ POTENTIAL CONTINUITY CHECK=T
+ TEST MODE=F
+ SPIN POLARIZED=F
+
+          Sb -- BCC equation of state -- Hedin-Lundqvist                                  
+
+
+
+          THIS IS A  B U L K             CALCULATION
+
+
+
+
+          THIS IS A REAL SECULAR EQS.    CALCULATION
+
+
+1
+          D I M E N S I O N S   U S E D   T H I S   R U N :
+
+
+
+     COMDECK P1: 
+
+              NATD,  NTYPD                                
+                 4       4
+
+     COMDECK P2: 
+
+               N3D,    N2D,  NIS2D,  NIZMD                
+              2000       1       1       1
+            MMSTRD, NTSTRD, LOOS1D, LOOS2D, LOOS3D        
+                48   35000      24      24      24
+             NXYZD, NCFFTD                                
+            262144      64
+            MMAXD1, MMAXD2, MMAXD3, MAXYZD                
+                 7       7       7 2097152
+
+     COMDECK P3: 
+
+              JMTD,   NMZD, NMZXYD, NXYM1D, JNMTD         
+              1001       1       1       1    1000
+
+     COMDECK P4: 
+
+              MEMD,   NLHD, NTYPSD, LMLTHD                
+                17      81       4      81
+
+     COMDECK P5: 
+
+               NVD,  NTWFD,  LMWFD,   NOBD,   NTBD, NHERVD
+              2000       9      81     100     150       1
+
+
+     COMDECK P6: 
+
+              N2VD, NUVACD                                
+                 1       1
+
+     COMDECK P7: 
+
+            NTNMTD, LLNMTD                                
+                 9      45
+
+     COMDECK P8: 
+
+             NKPTD,   NWDD,  NWDDV,  NTETD                
+              2200       1       1       1
+
+     COMDECK P9: 
+
+            NTSPND, NSOBND,  JSPND, LMSPND,   NSOD        
+                 1       1       1       1       2
+
+     COMDECK P10:
+
+             NCMSH,  NCSTD                                
+              3501      24
+
+     COMDECK P12:
+
+             MXLSD,   NCVD                                
+                11       9
+
+     COMDECK P13:
+
+               NPD                                        
+                60
+
+     COMDECK P15:
+
+             NSPFD,   NSTD                                
+                60      40
+
+     COMDECK P16:
+
+            LMAX1D,  NGNTD                                
+                11      17
+
+     COMDECK P17:
+
+              NOPD                                        
+                48
+
+          DISTANCES ARE SCALED BY A FACTOR OF   5.60000
+
+
+
+          LATTIC =  2     BCC Lattice                                                             
+
+  PRIMITIVE VECTORS OF THE DIRECT LATTICE:
+
+ -2.800000  2.800000  2.800000
+  2.800000 -2.800000  2.800000
+  2.800000  2.800000 -2.800000
+
+  VOLUME OF THE UNIT CELL=     87.80800000
+
+
+  PRIMITIVE VECTORS OF THE RECIPROCAL LATTICE:
+
+  0.000000  1.121997  1.121997
+  1.121997  0.000000  1.121997
+  1.121997  1.121997  0.000000
+
+
+                              RECIPROCAL SPACE METRIC:
+
+                               0.25177562D+01    0.12588781D+01    0.12588781D+01
+                               0.12588781D+01    0.25177562D+01    0.12588781D+01
+                               0.12588781D+01    0.12588781D+01    0.25177562D+01
+          NTYPE= 2
+
+
+          EXCHANGE-CORRELATION APPROXIMATION
+               ICORR=0   MEANS XALPHA (E.G. XALPHA=2/3=KSG)
+               ICORR=1   MEANS WIGNER-INTERPOLATION
+               ICORR=2   MEANS HEDIN-LUNDQVIST
+               ICORR=3   MEANS RELATIVISTIC KOHN-SHAM EXCHANGE+WIGNER CORRELATION POTENTIAL
+               ICORR=4   MEANS RELATIVISTIC KOHN-SHAM EXCHANGE+HEDIN-LUNDQVIST CORRELATION POTENTIAL
+               ICORR=5   MEANS VOSKO CORRELATION POTENTIAL
+               ICORR=6   MEANS LAVINE-LOUIE POTENTIAL
+               ICORR=7   MEANS PERDEWS ELECTRON GAS FIT
+               ICORR=8   MEANS LDA PART OF PBE GGA
+                         ICORR =  2
+                         XALPHA=  0.666667
+                         LAMDA=  0.000000
+
+
+          Z= 53.
+          THERE ARE  1 EQUIVALENT ATOMS.
+          THEIR POSITIONS IN LATTICE COORDINATES ARE:
+            0.000000  0.000000  0.000000     ISYE= 1
+
+          Z=  1.
+          THERE ARE  1 EQUIVALENT ATOMS.
+          THEIR POSITIONS IN LATTICE COORDINATES ARE:
+            0.000000  0.500000  0.500000     ISYE= 1
+          Z= 53. HAS A MUFFIN-TIN RADIUS OF  2.200000     RNOT=    0.00000487     DX=  0.030000
+ JRI= 435
+          Z=  1. HAS A MUFFIN-TIN RADIUS OF  1.200000     RNOT=    0.00000266     DX=  0.030000
+ JRI= 435
+          DIMESION OF G VECTOR IN CFFT, L(I)=2**M(I)
+          M(I)=    6    6    6
+          RKMIX=   8.00000   RMTMIN=   1.20000
+
+
+        ON INPUT:   THE ROTATION MATRICES ARE IN CARTESIAN COORDINATES
+
+ TYPE=   1  ATOM=   1  POS=   0.00000   0.00000   0.00000
+ TYPE=   2  ATOM=   2  POS=   0.00000   0.50000   0.50000
+ TYPE=   2  ATOM=   3  POS=   0.50000   0.50000   0.00000
+ TYPE=   2  ATOM=   4  POS=   0.50000   0.00000   0.50000
+
+
+                              THERE ARE 48 SPACE GROUP OPERATIONS
+                              THE POINT GROUP IS Im(-3)m   
+
+ ATOM NO=    1    ISYE=    1
+ ATOM NO=    2    ISYE=    1
+ ATOM NO=    3    ISYE=    9
+ ATOM NO=    4    ISYE=    5
+ NOJOP=   48   16
+
+
+          NUMBER OF SYMMETRY KINDS=  2
+          MAX SYMMETRY L-VALUE=  8
+
+
+
+          ATOM TYPE  1  JRINMT= 120
+
+          ATOM TYPE  2  JRINMT= 120
+
+          **************************************************
+
+                                     SYMMETRY KIND    1
+
+          THE FOLLOWING ATOM TYPES HAVE THIS SYMMETRY KIND:
+
+          NTYPE=  1
+
+          THERE ARE  3  LATTICE HARMONICS FOR SYM. KIND  1:
+
+
+          **************************************************
+
+                                     SYMMETRY KIND    2
+
+          THE FOLLOWING ATOM TYPES HAVE THIS SYMMETRY KIND:
+
+          NTYPE=  2
+
+          THERE ARE  8  LATTICE HARMONICS FOR SYM. KIND  2:
+
+ MUFCHK: OVERLAPPING M.T. SPHERES - N1,N2=           1           2
+ SITES   1   2

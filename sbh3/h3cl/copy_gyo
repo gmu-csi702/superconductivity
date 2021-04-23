@@ -1,0 +1,11 @@
+#!/bin/bash
+path='../bcc-1710/'
+for i in $(seq 5.6 0.1 8.1)
+do
+	if [  -e $path/lat$i/gyo  ]; then
+		mkdir gyo-$i
+		cp $path/lat$i/dos/* gyo-$i/.
+	        cp $path/lat$i/gyo/* gyo-$i/.
+		cp gyo/* gyo-$i/.
+	fi
+done

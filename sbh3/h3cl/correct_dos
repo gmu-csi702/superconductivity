@@ -1,0 +1,22 @@
+#!/bin/bash
+
+
+l=0
+                  
+declare -a ub=("1.8" "1.8" "1.8" "1.5" "1.5" "1.5" "1.5" "1.5" "1.25" "1.25" "1.25" "1.25" "1.25") 
+declare -a lb=("-1.8" "-1.8" "-1.8" "-1.5" "-1.5" "-1.5" "-1.5" "-1.5" "-1.25" "-1.25" "-1.25" "-1.25" "-1.25") 
+
+for i in $(seq 6.2  0.1  7.4)
+do
+	cd gyo-$i/
+        sed -i "10 c\set title 'Electronic Density of States, a=$i a.u.'" dosplot.gnu
+	sed -i -e 's/at EF/at 0.0/g' dosplot.gnu
+	sed -i -e 's/from EF/from 0.0/g' dosplot.gnu
+	sed -i -e 's/to EF/to 0.0/g' dosplot.gnu
+	sed -i "13 c\set xrange[${lb[l]}:${ub[l]}]" dosplot.gnu
+	gnuplot dosplot.gnu
+	cd ../
+
+#	echo "$i [${lb[l]}:${ub[l]}]" 
+    l=$(( $l + 1 ))
+done

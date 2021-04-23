@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# This script runs the lapw codes to generate 
+#the DOS plots, band plots and calculate the 
+#Hopefiled parametersfor diferent lattice constants.
+#IT uses the combination specific input files in
+#the directory lat_src and additional files in 
+#dos_src(for DOS calculations), bands_src(for bad plots)
+#and gyo_src (for the Hopefield parameter).
+# The input files(INFILE,CDN1) in lat_src need to be 
+#modifed for each specific combination of XH_3
+
+
+el="SbH_3" #title for DOS plots
+pt=18 #for proper positioning or the label in the DOS plots
+rm e_fermi #fermi level for each lattice constant
+
+#loop over the lattice constants of interest
+for i in $(seq 7.0 0.2 8.0)
+do
+
+#create directory for each lattice 
+#constant and copy in source files/scripts
+ mkdir -p "lat"$i
+ cd lat$i
+ cp ../lat_src/* .
+
+ 
+#update lattice constants in scripts
+ sed -i "3 c\ i=$i " run.start
+ sed -i "3 c\ i=$i " run.calc
+ sed -i "2 c\ i=$i " run.dos
+ sed -i "3 c\ el=$el " run.dos
+ sed -i "4 c\ pt=$pt " run.dos
+ sed -i "3 c\ i=$i " run.bands
+
+#run in sequence (iterate, calculate, 
+#get dos, Hopfiled factor and bands
+ ./run.start
+ ./run.calc
+ ./run.dos 
+ ./run.gyo
+ ./run.bands
+ 
+#clean up
+ mkdir -p dos/
+ mv dos* dos/.
+ mv ferv_* dos/.
+ mv QLMT.dos  dos/QLMT
+ mv qlmtconvert dos/.
+ mkdir -p bands/
+ mv band* bands/.
+ mv QLMT.bands  bands/QLMT
+ rm run.*
+
+ cd ../
+
+ echo "done $i"
+ pt=`expr $pt + 2`
+
+done

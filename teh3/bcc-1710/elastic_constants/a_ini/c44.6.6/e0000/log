@@ -1,0 +1,13 @@
+forrtl: severe (67): input statement requires too much data, unit 66, file /home/ssilayi/lapw/teh3/elastic-constants/a_ini/c44.6.6/e0000/EIGWAV
+Image              PC                Routine            Line        Source             
+lapw4at            000000000053F412  Unknown               Unknown  Unknown
+lapw4at            000000000053E612  Unknown               Unknown  Unknown
+lapw4at            00000000004F41B2  Unknown               Unknown  Unknown
+lapw4at            00000000004B7759  Unknown               Unknown  Unknown
+lapw4at            00000000004B7046  Unknown               Unknown  Unknown
+lapw4at            00000000004D017F  Unknown               Unknown  Unknown
+lapw4at            0000000000411E95  Unknown               Unknown  Unknown
+lapw4at            0000000000409DB9  Unknown               Unknown  Unknown
+lapw4at            00000000004035D6  Unknown               Unknown  Unknown
+libc.so.6          00007F9EAB1CE3D5  Unknown               Unknown  Unknown
+lapw4at            00000000004034E9  Unknown               Unknown  Unknown

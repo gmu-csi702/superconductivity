@@ -1,0 +1,23 @@
+SbH_3  BCC 7.0
+1
+QLMT                                         ! Input file
+PRIMITIVE VECTORS OF THE DIRECT LATTICE
+  0.5  0.5 -0.5
+  0.5 -0.5  0.5
+ -0.5  0.5  0.5
+Number of band to be ploted, maximum eigenvalue
+ 9 100
+Fermi energy (Ry)
+ 1.05984
+Enter the number of k-directions in the Brillouin zone
+ 7                                               ! k-directions in the Brillouin zone
+ 51                                             !number of k-point in the  1 direction
+ 51                                             !number of k-point in the  2 direction
+ 51                                             !number of k-point in the  3 direction
+ 51                                             !number of k-point in the  4 direction
+ 51                                             !number of k-point in the  5 direction
+ 51                                             !number of k-point in the  5 direction
+ 51                                             !number of k-point in the  5 direction
+banddata                                       ! Output file -donot change the title
+bandplot.gnu                                    ! Output gnuplot file
+

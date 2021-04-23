@@ -1,0 +1,15 @@
+#!/bin/bash
+
+i=7.0
+ 
+
+cp INFILE.run INFILE
+
+sed -i "5 c\ $i " INFILE
+sed -i "39 c\ -0.500     5.000" INFILE
+ 
+./lapw.com
+
+
+cp INFILE INFILE.dos
+cp INFO INFO.dos

@@ -1,0 +1,12 @@
+#!/bin/bash
+#loop over the lattice constants of interest
+for i in $(seq 7.0 0.1 8.4)
+do
+  mkdir $i
+  cp ../lat$i/dos/*.eps  $i/.
+  cp ../lat$i/bands/*.eps $i/.
+done
+
+
+
+

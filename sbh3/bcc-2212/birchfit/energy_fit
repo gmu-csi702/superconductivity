@@ -1,0 +1,27 @@
+
+
+rm *out*
+
+cat < fit5.dat >> EOF
+etot.sbh3
+    2    3    2    2
+    0    2    1    2    3
+y
+fitout.sbh3lapw
+
+EOF
+
+
+./mehlmak
+
+cat < coeff.inp >> EOF
+1 0 
+echo "$(sed -n p2 fitout.sbh3lapw)" 
+  6.4   8.9  0.05
+
+EOF
+
+
+./polyfit
+
+

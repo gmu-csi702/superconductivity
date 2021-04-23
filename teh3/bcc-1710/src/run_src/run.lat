@@ -1,0 +1,30 @@
+#!/bin/bash
+i=8.0 
+
+./lapw.com
+
+
+#run in sequence (iterate, calculate, 
+#get dos, Hopfiled factor and bands
+ sed -i "2 c\ i=$i " ../run.dos
+ ./../run.dos 
+ 
+ sed -i "3 c\ i=$i " ../run.bands
+ ./../run.bands
+ 
+#clean up
+ mkdir -p dos/
+ mv dos* dos/.
+ mv ferv_* dos/.
+ mv QLMT.dos  dos/QLMT
+ mv qlmtconvert dos/.
+ mkdir -p bands/
+ mv band* bands/.
+ mv QLMT.bands  bands/QLMT
+ cp dos/dosdat.out bands/.
+ rm run.*
+
+ cd ../
+
+ echo "done $i"
+

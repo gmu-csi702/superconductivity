@@ -1,0 +1,67 @@
+#!/bin/bash
+# script modifies Ef in dos.in file and rerun gyond calculations
+
+rm  TC_vs_EF
+rm  NE 
+rm  NEF_tmp.dat EF_tmp.dat ETA_*.dat
+# read in omega from the file as a 2D array
+declare -a myarray
+
+readarray myarray  < NEF0.dat
+
+l=0
+#for l in 5.4 5.6 5.8 6.0 6.2 6.4 6.6 6.8 7.0 7.2
+for l in $(seq 0 1 30)
+do
+
+    #EF=1.73612 #  `printf "${myarray[l]}" |awk '{print $1}'`
+    #NEF=4.97184 #   `printf "${myarray[l]}" |awk '{print $3}'`
+    #EF=`printf "${myarray[l]}" |awk '{print $1}'`
+    NE=`printf "${myarray[l]}" |awk '{print $2}'`
+    #NEF=`printf "${myarray[l]}" |awk '{print $3}'`
+    #echo $EF  $NEF 
+
+    pdos1=`printf "${myarray[l]}" |awk '{print "   "$1"    "$3"    " $4"    "$5 "    "$6  "    "$7"   "$8}'`
+    pdos2=`printf "${myarray[l]}" |awk '{print "   "$1"    "$3"    " $9"    "$10"    "$11 "    " $12"   "$13}'`
+
+    sed -i "2s/.*/$pdos1/"  dos.in
+    sed -i "4s/.*/$pdos2/"  dos.in
+
+#    head -n2 ../dosapw.itp > dos.in
+#    echo "   $m1    $omg1     0.10    $omg_log">> dos.in
+#    tail -n1 ../dosapw.itp >>  dos.in
+#    echo "   $m2   $omg2     0.10    $omg_log" >> dos.in
+
+#    sed -i   "2{s/[^ ]*[^ ]/$EF/1}"  dos.in
+#    sed -i   "4{s/[^ ]*[^ ]/$EF/1}"  dos.in
+#
+#    sed -i   "2{s/[^ ]*[^ ]/$NEF/2}"  dos.in
+#    sed -i   "4{s/[^ ]*[^ ]/$NEF/2}"  dos.in
+
+#    cp /home/phchang/Research_GMU/High_Tc/gyond_new gyond 
+     ./gyond  >/dev/null 
+
+    #grep -a LAMDTOT gyo1.out # >>  $cpath'/LAMDATOT_tmp'
+    grep -a TC      gyo1.out # >>  $cpath'/TC_tmp'
+    grep -a TC      gyo1.out >>  TC_vs_EF
+    echo $NE >> NE
+    #grep -a OMEGA gyo1.out |paste -sd" " #>> $cpath'/omg_tmp'
+    #grep -a NEF gyo1.out   |paste -sd" " #>> $cpath'/NEF_tmp'
+    grep -a ETA gyo1.out   |paste -sd" " #>> $cpath'/NEF_tmp'
+
+    cat gyo1.out  |grep  -a  ' NEF' |tail -1  >> NEF_tmp.dat
+    cat gyo1.out  |grep  -a  ' EF' |tail -1  >>  EF_tmp.dat
+    cat gyo1.out  |grep  -a  ' ETA' | head -n 3 | tail -1  >>  ETA_Sb.tmp.dat
+    cat gyo1.out  |grep  -a  ' ETA' | tail -1  >>  ETA_H.tmp.dat
+
+#    l=$(( $l + 1 ))
+done
+
+sed -i 's/=/= /g' TC_vs_EF 
+echo " EF           el_#      N(EF)     Tc       "  > TC_EF.dat
+paste EF_tmp.dat NE  NEF_tmp.dat   TC_vs_EF| awk '{print"   "$3"    "$4"    " $7"    "$9}'  >> TC_EF.dat
+
+echo " ETA_Sb     ETA_H        "  > ETA.dat
+paste ETA_Sb.tmp.dat ETA_H.tmp.dat | awk '{print "    "$2"    "$4 }' >> ETA.dat
+
+paste ETA.dat TC_EF.dat > ETA_TC_EF.dat

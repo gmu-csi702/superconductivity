@@ -1,0 +1,11 @@
+#!/bin/bash
+path='../'
+for i in $(seq 5.5 0.1 8.2)
+do
+	if [  -e $path/lat$i/gyo  ]; then
+		mkdir gyo-$i
+		cp $path/lat$i/dos/* gyo-$i/.
+	        cp $path/lat$i/gyo/* gyo-$i/.
+		cp gyo/* gyo-$i/.
+	fi
+done

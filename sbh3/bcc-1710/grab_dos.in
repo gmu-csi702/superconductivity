@@ -1,0 +1,12 @@
+#!/bin/bash
+
+rm -rf dos.in.all
+rm -rf dos.in.0
+rm -rf col
+for i in $(seq 5.6 0.1 8.1)
+do
+	l=`head -n 5 lat$i/gyo/dos.in | sed '/Sb/d' | sed -n '1~2p'`
+       echo "$i $l"	>> dos.in.all
+done
+
+

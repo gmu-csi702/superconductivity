@@ -1,0 +1,26 @@
+#!/bin/bash
+
+nkpt=1785
+DX=0.015
+
+cpath=`pwd`
+
+for i in 5.6 5.8 6.0 6.2 6.4 6.6 6.8 7.0 7.2 
+do
+    gyo_path="gyo-"$i/
+    cd $gyo_path
+
+       
+       #echo $i    `cat gyo1.out  |grep -a -A 1 "^ PHASE SHIFTS" |grep -v "PHASE"  | head  -1`  
+       delta_X=`cat gyo1.out  |grep -a -A 1 "^ PHASE SHIFTS" |grep -v "PHASE"  | head  -1`  
+       delta_H=`cat gyo1.out  |grep -a -A 1 "^ PHASE SHIFTS" |grep -v "PHASE"  | tail  -1`  
+       echo $i '  ' $delta_X '   '$delta_H
+
+       # echo $i    `cat gyo1.out  |grep -a -A 1 "^ PHASE SHIFTS" |grep -v "PHASE"  | head  -1`  > phase_delta
+       
+        #paste tmp0A1.*  > tmp000A1   # 
+        #sed -e "s/^/$i   /" tmp000A1 >> $cpath"/fort25_A1output" 
+
+    #rm   tmp0* 
+    cd $cpath
+done

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+
+EF=$(head -1 dos/ferv_omega | awk '{print $1}')
+echo "$EF"
+

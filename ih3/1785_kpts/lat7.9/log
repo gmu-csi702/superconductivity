@@ -1,0 +1,20 @@
+rm: cannot remove 'BRH*': No such file or directory
+forrtl: No space left on device
+forrtl: severe (38): error during write, unit 67, file /home/ssilayi/lapw/ih3/1785_kpts/lat7.9/./EIGX1
+Image              PC                Routine            Line        Source             
+lapw4at            000000000053F412  Unknown               Unknown  Unknown
+lapw4at            000000000053E612  Unknown               Unknown  Unknown
+lapw4at            00000000004F41B2  Unknown               Unknown  Unknown
+lapw4at            00000000004B7759  Unknown               Unknown  Unknown
+lapw4at            00000000004B7046  Unknown               Unknown  Unknown
+lapw4at            00000000004DC897  Unknown               Unknown  Unknown
+lapw4at            000000000044D3E8  Unknown               Unknown  Unknown
+lapw4at            0000000000404ED1  Unknown               Unknown  Unknown
+lapw4at            00000000004035D6  Unknown               Unknown  Unknown
+libc.so.6          00007F0D1AD7A46A  Unknown               Unknown  Unknown
+lapw4at            00000000004034E9  Unknown               Unknown  Unknown
+rm: cannot remove 'CORECG': No such file or directory
+rm: cannot remove 'IO*': No such file or directory
+rm: cannot remove 'PLFILE': No such file or directory
+rm: cannot remove 'W*': No such file or directory
+rm: cannot remove 'fort*': No such file or directory

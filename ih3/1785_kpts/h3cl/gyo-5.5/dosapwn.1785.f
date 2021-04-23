@@ -1,0 +1,665 @@
+C  TETRAHEDRON---FOR OUTPUT OF INTERFCC
+C  FOR 35 BANDS
+      IMPLICIT REAL*8(A-H,O-Z)
+C     REAL*4 E
+C     REAL*4 EIN(NAT,NP)
+C     CHARACTER*10 INA,INB,INC,IND
+      COMMON/COMM/   FERV(9000),SFER(9000),OMEGA(9000),
+C    1  EM(9000),E(16,969,35),DOS(16,9000),ELEC(9000)  !285 KPOINTS
+     1  EM(9000),E(16,6545,35),DOS(16,9000),ELEC(9000) !1785 KPOINTS
+      CHARACTER*40 TITLE
+      open(21,file='dosdat.dos',BLANK = 'ZERO')
+      OPEN (10,FILE='dosdat.out',BLANK = 'ZERO')
+C   DESPITE '.OUT' EXTENDER, FILE 10 IS INPUT; IT'S OUTPUT OF INTERFCC
+      OPEN(15,FILE='dosdat.bin',BLANK = 'ZERO')
+      OPEN(19,FILE='dosdat.bin.plot',BLANK = 'ZERO')
+      OPEN(20,FILE='dosdat.chr',BLANK = 'ZERO')
+      OPEN (12,FILE='dosapw.eng',BLANK = 'ZERO',STATUS='UNKNOWN')
+      OPEN (13,FILE='dosapw.itp',BLANK = 'ZERO')
+      OPEN (14,FILE='ferv_omega',BLANK = 'ZERO')
+      NH=9000
+C   FOR BCC AND FCC RUNS:
+C     NP=969    ! 285 KPOINTS
+      NP=6545   ! 1785 KPOINTS
+CC    NP=969  CORRESPONDS TO CUBIC MESH EQUIVALENT TO 505 FCC
+      NB=35
+      NAT=16
+C   FOR CsCl RUNS:
+c     NP=165
+C     NB=18
+C     NAT=9
+C
+      CALL TETDS(NH,NP,NB,NAT)
+      CLOSE(12)
+      CLOSE(13)
+      CLOSE(10)
+      CLOSE(15)
+      CLOSE(20)
+      STOP
+      END
+      SUBROUTINE CALDV(INC,NBD,MESH,NAT,NP,NB)
+      IMPLICIT REAL*8(A-H,O-Z)
+      DIMENSION INC(6,3,3),KT(4,3),KTS(4,3,35),DEV(35)
+      DIMENSION ETS(4,35),ET(4)
+      COMMON/COMM/       FERV(9000),SFER(9000),OMEGA(9000),
+C    1  EM(9000),E(16,969,35),DOS(16,9000),ELEC(9000)   ! 285 KPOINTS
+     1  EM(9000),E(16,6545,35),DOS(16,9000),ELEC(9000)  ! 1785 KPOINTS
+      NSAV=8
+      MESH2=MESH*2
+      M2P1=MESH2+1
+      DO 200 IB=1,NBD
+      WRITE(20,1) IB
+    1 FORMAT('-LARGEST DEVIATIONS FOR BAND NUMBER',I3)
+      JNC=MESH
+  150 IF(JNC.EQ.0) GO TO 80
+      DO 160 I=1,NSAV
+  160 DEV(I)=0.0
+      KKK=0
+      DO 100 II=1,M2P1,JNC
+      KT(1,1)=II-1
+      DO 100 JJ=1,II,JNC
+      KT(1,2)=JJ-1
+      DO 100 KK=1,JJ,JNC
+      KKK=KKK+1
+      KT(1,3)=KK-1
+      DO 70 NN=1,6
+      DO 40 L=1,3
+      DO 40 M=1,3
+   40 KT(L+1,M)=KT(1,M)+INC(NN,L,M)*JNC
+      DO 60 L=2,4
+      IF(KT(L,1).GT.MESH2) GO TO 70
+      IF(KT(L,3).GT.KT(L,2)) GO TO 70
+      IF(KT(L,2).GT.KT(L,1)) GO TO 70
+   60 CONTINUE
+      DO 65 L=1,4
+      K1=KT(L,1)
+      K2=KT(L,2)
+      K3=KT(L,3)
+      IN=K1*(K1+1)*(K1+2)/6 + K2*(K2+1)/2 + K3 + 1
+   65 ET(L)=E(1,IN,IB)
+      EAV=(ET(1)+ET(2)+ET(3)+ET(4))*0.25
+      ADEV=ABS(ET(1)-EAV)+ABS(ET(2)-EAV)+ABS(ET(3)-EAV)+ABS(ET(4)-EAV)
+      ADEV=ADEV*0.25
+      IF(ADEV.LE.DEV(NSAV)) GO TO 76
+      DO 75 I=2,NSAV
+      J=NSAV-I+1
+      IF(ADEV.LT.DEV(J)) GO TO 77
+   75 CONTINUE
+      J=J-1
+   77 CONTINUE
+      J=J+2
+      IF(J.GT.NSAV) GO TO 73
+      DO 78 I=J,NSAV
+      N=NSAV-I+J
+      DEV(N)=DEV(N-1)
+      DO 79 L=1,4
+      ETS(L,N)=ETS(L,N-1)
+      DO 79 M=1,3
+   79 KTS(L,M,N)=KTS(L,M,N-1)
+   78 CONTINUE
+   73 CONTINUE
+      DEV(J-1)=ADEV
+      DO 74 L=1,4
+      ETS(L,J-1)=ET(L)
+      DO 74 M=1,3
+   74 KTS(L,M,J-1)=KT(L,M)
+   76 CONTINUE
+   70 CONTINUE
+  100 CONTINUE
+      WRITE(20,2) KKK
+    2 FORMAT(1X,I5,' POINT MESH')
+      WRITE(20,3)
+    3 FORMAT(4X,'DEV',12X,'E1',6X,'K1',14X,'E2',6X,'K2',14X,'E3',6X,'K3'
+     1,14X,'E4',6X,'K4')
+      DO 85 I=1,NSAV
+      WRITE(20,4) DEV(I),(ETS(L,I),(KTS(L,M,I),M=1,3),L=1,4)
+    4 FORMAT(1X,F9.5,4(5X,F10.5,3I3))
+   85 CONTINUE
+      JNC=JNC/2
+      GO TO 150
+   80 CONTINUE
+  200 CONTINUE
+      RETURN
+      END
+      SUBROUTINE TETDS(NH,NP,NB,NAT)
+      IMPLICIT REAL*8(A-H,O-Z)
+C     PARAMETER NNH=2000
+C     REAL*4 E
+      REAL*8 INTERP,NUMELEC
+      DIMENSION DENSFL(15),DOS1(9000),DOS2(9000),DOS3(9000),DOS4(9000),
+     1  DOS5(9000),DOS6(9000),DOS7(9000),DOS8(9000),DOS9(9000),
+     2  DOS10(9000),DOS11(9000),dos12(9000),dos13(9000),dos14(9000),
+     3  DOS15(9000),DOS16(9000)
+C     REAL EIN(11,969)
+C     dimension EIN(16,969)  ! 285 KPOINTS
+      dimension EIN(16,6545) !1785 KPOINTS
+C     REAL*4 TITLE(20)
+      COMMON/COMM/        FERV(9000),SFER(9000),OMEGA(9000),
+C    1  EM(9000),E(16,969,35),DOS(16,9000),ELEC(9000) !285 KPOINTS
+     1  EM(9000),E(16,6545,35),DOS(16,9000),ELEC(9000) !1785 KPOINTS
+      CHARACTER*40 TITLE
+      DIMENSION IJX(60),IJN(60)
+      DIMENSION KT(4,3)
+      DIMENSION INC(6,3,3),IND(4),EO(16,4),S0(16),S1(16),S2(16),S3(16)
+      DIMENSION ST(35),DL(35)
+      DIMENSION ELC(9000)
+      DATA INC/1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,0,1,0,1,1,1,1,1,1,1,1,1,1,0
+     A,0,0,1,1,0,0,0,1,1,1,1,1,1,0,0,1,1,1,1,0,0,0,1,0,1/
+      NNH=9000
+      IF(NH.LE.NNH) GO TO 256
+      WRITE(20,257)
+  257 FORMAT(' NH TOO BIG -- STOPPING')
+      STOP
+  256 CONTINUE
+      E01=0.0
+      DO 4 I=1,NH
+      ELC(I)=0.0
+      FERV(I)=0.0
+      SFER(I)=0.0
+    4 OMEGA(I)=0.0
+      DO 5 I=1,NAT
+      DO 5 J=1,NP
+      DO 5 K=1,NB
+    5 E(I,J,K)=0.0
+      DO 6 I=1,NAT
+      DO 6 J=1,NH
+    6 DOS(I,J)=0.0
+      PI=3.1415926
+      READ(10,499)IAT1,JH2,NPLOT
+ 499  FORMAT(3I5)
+      READ(10,500)TITLE,iatom
+      READ(10,501) NUMELEC
+      write(*,551) NUMELEC
+  500 FORMAT(A40,I5)
+  501 FORMAT(F6.2)
+  551 FORMAT( 1x,'numel',f6.2)
+c 501 FORMAT(I5)
+      WRITE(*,600)TITLE
+      WRITE(20,600)TITLE
+  600 FORMAT(///,20X,A40,///)
+      WRITE(20,601)
+  601 FORMAT(20X,'**************************************',///)
+C-------------------------------------------
+C     ISTR =1    BCC     ISTR =2   FCC(Nacl,Fluo)
+C     ISTR =3   CUBIC (INCLUDING CsCl)
+C-------------------------------------------
+      READ(10,141)ISTR,ISTRU
+ 141  FORMAT (2I4)
+      IF((ISTR.GT.3).OR.(ISTR.LT.1)) THEN
+         WRITE(20,1611)
+ 1611    FORMAT(' ERROR IN ISTR------STOPPING')
+         STOP 12
+      ENDIF
+      IF (ISTR .EQ.1) WRITE(20,161)
+ 161  FORMAT (3X,'STRUCTURE BCC')
+      IF (ISTR .EQ.2) WRITE(20,162)
+ 162  FORMAT (3X,'STRUCTURE FCC')
+      IF (ISTR .EQ.3) WRITE(20,163)
+ 163  FORMAT (3X,'STRUCTURE CUBIC')
+      READ(10,142)ALAT
+ 142  FORMAT (F10.5)
+      PIA=PI/ALAT
+      WRITE(20,143)ALAT
+ 143  FORMAT (3X,'ALAT=',F10.5)
+      READ(10,1) MESH,NBD,IAT,NRG,ISD
+      WRITE(20,1)MESH,NBD,IAT,NRG,ISD
+    1 FORMAT(5I5)
+      MESH2=MESH*2
+      M2P1=MESH2+1
+      NRP1=NRG+1
+      READ(10,2) (ST(I),DL(I),I=1,NRP1)
+      WRITE(20,2)(ST(I),DL(I),I=1,NRP1)
+    2 FORMAT(8F10.5)
+      NPTS=1
+      EM(1)=ST(1)
+      DO 15 I=1,NRG
+   16 NPTS=NPTS+1
+      EM(NPTS)=EM(NPTS-1)+DL(I)
+      IF(NPTS.GE.NH) GO TO 17
+      IF(EM(NPTS).LE.ST(I+1)) GO TO 16
+      NPTS=NPTS-1
+      EM(NPTS)=ST(I+1)
+   15 CONTINUE
+   17 CONTINUE
+      IF (ISTR.EQ.1) INBZ=MESH2+2
+      IF (ISTR.EQ.2) INBZ=MESH*3+3
+      IF (ISTR.EQ.3)  GO TO 1000
+      DO 210 I=1,M2P1
+      DO 210 J=1,I
+      DO 210 K=1,J
+      IF (ISTR.EQ.2) GO TO 213
+      IF (I+J  .GT.INBZ) GO TO 210
+      IF (ISTR.EQ.1) GO TO 214
+ 213  IF (I+J+K.GT.INBZ) GO TO 210
+ 214  NID=I*(I-1)*(I+1)/6+J*(J-1)/2+K
+      DO 215 IB=1,NBD
+      READ (12,211) (E(L,NID,IB),L=1,6)
+      IF(IAT .eq. 6) go to 215
+      READ (12,221) (E(L,NID,IB),L=7,11)     
+ 211  FORMAT(6F8.5)
+ 221  FORMAT(8X,5F8.5)
+C *************CAUTION THIS IS THE EMPIRICAL SHIFT FOR FE***************
+C     E(1,NID,IB)=E(1,NID,IB)+0.07241
+C    FREE ELECTRON TEST
+      XESH2=MESH2
+C     E(1,NID,IB)=((I-1)/XESH2)**2+((J-1)/XESH2)**2+((K-1)/XESH2)**2
+C
+C     IF (IAT.LE.6) GO TO 215C     C     C     C     C     C     C
+C     READ (9,212)             (E(L,NID,IB),L=6,IAT)
+ 212  FORMAT (12X,4F8.5)
+ 215  CONTINUE
+      IF (ISTR.EQ.1) GO TO 220
+      II=IABS(I-1-MESH2)+1
+      JJ=IABS(J-1-MESH2)+1
+      KK=IABS(K-1-MESH2)+1
+      IDN=KK*(KK-1)*(KK+1)/6+JJ*(JJ-1)/2+II
+C     WRITE(20,217) I,J,K,NID,IDN
+ 217  FORMAT (1X,5I5)
+      DO 216 IB=1,NBD
+      DO 216  L=1,IAT
+      E(L,IDN,IB)=E(L,NID,IB)
+ 216  CONTINUE
+      IF (ISTR.EQ.2) GO TO 210
+ 220  DO 218 IJK=1,3
+      II=IABS(I-1-MESH2)+1
+      JJ=IABS(J-1-MESH2)+1
+      KK=IABS(K-1-MESH2)+1
+      IF (IJK.EQ.1) IDN=JJ*(JJ-1)*(JJ+1)/6+II*(II-1)/2+K
+      IF (IJK.EQ.2) IDN=KK*(KK-1)*(KK+1)/6+JJ*(JJ-1)/2+I
+      IF (IJK.EQ.3) IDN=KK*(KK-1)*(KK+1)/6+II*(II-1)/2+J
+C     WRITE(20,217) I,J,K,NID,IDN
+      DO 219 IB=1,NBD
+C     PRINT 712, E(1,NID,IB)
+      DO 219  L=1,IAT
+ 712  FORMAT (1X,F10.5)
+      E(L,IDN,IB)=E(L,NID,IB)
+ 219  CONTINUE
+ 218  CONTINUE
+ 210  CONTINUE
+CC    WRITE(20,711) (E(1,J,1),J=1,NP)
+CC    WRITE(20,711) (E(1,J,2),J=1,NP)
+C     WRITE (7,711) (E(1,J,5),J=1,NP)
+C     WRITE (7,711) (E(1,J,6),J=1,NP)
+ 711  FORMAT (10F8.6)
+ 1000 I=0
+      IF (ISTR.NE.3) GO TO 21
+C    FREE ELECTRON TEST
+C     DO 310 I=1,M2P1
+C     DO 310 J=1,I
+C     DO 310 K=1,J
+C     NID=I*(I-1)*(I+1)/6+J*(J-1)/2+K
+C     DO 315 IB=1,NBD
+C     XESH2=MESH2
+C     E(1,NID,IB)=((I-1)/XESH2)**2+((J-1)/XESH2)**2+((K-1)/XESH2)**2
+      WRITE(20,217) I,J,K,NID
+C     PRINT 712, E(1,NID,IB)
+C315  CONTINUE
+C310  CONTINUE
+C
+      DO 20 J=1,NBD
+      READ (12,*) ((EIN(L1,J1),J1=1,NP),L1=1,IAT)
+      DO 30 I=1,NP
+      DO 30 L=1,IAT
+  30  E(L,I,J)=EIN(L,I)
+  20  CONTINUE
+  21  CONTINUE
+      MAX=NP
+      IJN(1)=1
+      DO 140 J=1,NBD
+      EJX=E(1,1,J)
+      EJN=E(1,1,J)
+      DO 160 I=2,MAX
+      IF(E(1,I,J).GT.EJX) EJX=E(1,I,J)
+      IF(E(1,I,J).LT.EJN) EJN=E(1,I,J)
+  160 CONTINUE
+      IMIN=IJN(J)
+      DO 170 I=IMIN,NPTS
+      II=I
+      IF(EM(I).LT.EJN) IJN(J)=I
+      IF(EM(I).GT.EJX) GO TO 171
+  170 CONTINUE
+  171 IJX(J)=II
+      IJN(J+1)=IJN(J)
+  140 CONTINUE
+      WRITE(20,901) NPTS
+  901 FORMAT(1X,10I5)
+      WRITE(20,901) (IJN(I),I=1,NBD)
+      WRITE(20,901) (IJX(I),I=1,NBD)
+  902 FORMAT(1X,10F10.5)
+      FILL=MESH2**3
+      DO 230 JB=1,NBD
+      IMAX=IJX(JB)+1
+      IF(IMAX.GT.NPTS) GO TO 230
+      DO 240 ID=IMAX,NPTS
+  240 ELC(ID)=ELC(ID)+FILL
+  230 CONTINUE
+      IF(ISD.LE.0) CALL CALDV(INC,NBD,MESH,NAT,NP,NB)
+      IF(ISD.LT.0) STOP
+      DO 100 II=1,M2P1
+      KT(1,1)=II-1
+      DO 100 JJ=1,II
+      KT(1,2)=JJ-1
+      DO 100 KK=1,JJ
+      KT(1,3)=KK-1
+      DO 70 N=1,6
+      DO 40 L=1,3
+      DO 40 M=1,3
+   40 KT(L+1,M)=KT(1,M)+INC(N,L,M)
+      DO 60 L=2,4
+      IF(KT(L,1).GT.MESH2) GO TO 70
+      IF(KT(L,3).GT.KT(L,2)) GO TO 70
+      IF(KT(L,2).GT.KT(L,1)) GO TO 70
+   60 CONTINUE
+      DO 65 L=1,4
+      K1=KT(L,1)
+      K2=KT(L,2)
+      K3=KT(L,3)
+      IND(L)=(K1*(K1+1)*(K1+2))/6 + K2*(K2+1)/2 + K3 + 1
+   65 CONTINUE
+      DO 80 JB=1,NBD
+      DO 85 L=1,4
+      ID=IND(L)
+      DO 85 M=1,IAT
+      EO(M,L)=E(M,ID,JB)
+   85 CONTINUE
+      ED21=EO(1,2)-EO(1,1)
+      ED31=EO(1,3)-EO(1,1)
+      ED41=EO(1,4)-EO(1,1)
+      PLAS=ED21**2+2.0*ED31**2+2.0*ED41**2-2.0*ED41*ED31-2.0*ED21*ED31
+      IF (ISTR.EQ.1)PLAS=PLAS*MESH **2/PIA**2
+      IF (ISTR.EQ.2)PLAS=PLAS*MESH **2/PIA**2
+      IF (ISTR.EQ.3.AND.ISTRU.EQ.1)PLAS=PLAS*MESH **2/PIA**2/SQRT(2.0)
+      IF (ISTR.EQ.3.AND.ISTRU.EQ.2)PLAS=PLAS*MESH **2/PIA**2/SQRT(2.0)
+C  ??      IF (ISTR.EQ.3.AND.ISTRU.EQ.2)PLAS=PLAS*MESH **2/PIA**2
+      IF (ISTR.EQ.3.AND.ISTRU.EQ.3)PLAS=PLAS*MESH2**2/PIA**2
+      SRPLAS=SQRT(PLAS)
+C     PRINT 1001, ((KT(L,M),M=1,3),L=1,4),(EO(1,L),L=1,4),PLAS
+ 1001 FORMAT (1X,4(3I3,2X),4F10.5,E16.7)
+   52 LAST=0
+      DO 50 L=2,4
+      LM1=L-1
+      IF(EO(1,L).GE.EO(1,LM1)) GO TO 50
+      DO 51 M=1,IAT
+      HELP=EO(M,L)
+      EO(M,L)=EO(M,LM1)
+      EO(M,LM1)=HELP
+   51 CONTINUE
+      LAST=1
+   50 CONTINUE
+      IF(LAST.EQ.1) GO TO 52
+      I1EI2=0
+      IF(EO(1,1).EQ.EO(1,2)) GO TO 71
+      E01=1.0/(EO(1,2)-EO(1,1))
+      E02=1.0/(EO(1,3)-EO(1,1))
+      E03=1.0/(EO(1,4)-EO(1,1))
+      C0=E01*E02*E03
+      DO 74 L=2,IAT
+      S0(L)=(E01*(EO(L,2)-EO(L,1))+E02*(EO(L,3)-EO(L,1))+E03*(EO(L,4)
+     A-EO(L,1)))/3.0
+   74 CONTINUE
+      GO TO 77
+   71 I1EI2=1
+   77 CONTINUE
+      IF(EO(1,3).EQ.EO(1,2)) GO TO 72
+      E02=1.0/(EO(1,3)-EO(1,1))
+      E03=1.0/(EO(1,4)-EO(1,1))
+      E12=1.0/(EO(1,3)-EO(1,2))
+      E13=1.0/(EO(1,4)-EO(1,2))
+      C1=E02*E03*E12
+      C2=E03*E12*E13
+      DO 75 L=2,IAT
+      H1=(EO(L,3)-EO(L,1))*E02+(EO(L,4)-EO(L,1))*E03
+      S1(L)=E12*(EO(L,2)-EO(L,1)+(EO(1,2)-EO(1,1))*H1)/3.0
+      H2=3.0*(EO(L,4)-EO(L,1))+EO(L,3)-EO(L,4)
+      H1=(EO(L,2)-EO(L,4))*E13+(EO(L,1)-EO(L,4))*EO3
+      H1=H1*(EO(1,4)-EO(1,3))
+      S2(L)=E12*(H1+H2)/3.0
+C     S1(L)=E03*(EO(L,4)-EO(L,1))+E02*(EO(L,3)-EO(L,1))*0.5
+C     S2(L)=E13*(EO(L,4)-EO(L,2))+E12*(EO(L,3)-EO(L,2))*0.5
+   75 CONTINUE
+      V0=C0
+      V1=-E01*E12*E13
+      V2=0.0
+      IF(I1EI2.EQ.0) GO TO 78
+      V0=-E02*E02*E03
+      V1=-E02*E03*E03
+      V2=3.0*E02*E03
+   78 CONTINUE
+   72 CONTINUE
+      IF(EO(1,4).EQ.EO(1,3)) GO TO 73
+      E03=1.0/(EO(1,4)-EO(1,1))
+      E13=1.0/(EO(1,4)-EO(1,2))
+      E23=1.0/(EO(1,4)-EO(1,3))
+      C3=E03*E13*E23
+      DO 76 L=2,IAT
+      S3(L)=(E03*(EO(L,4)-EO(L,1))+E13*(EO(L,4)-EO(L,2))+E23*(EO(L,4)
+     A-EO(L,3)))/3.0
+C      WRITE(15,1517) S3(L),L
+ 1517 FORMAT(1X,'S3(L),L',E12.6,5X,I5)
+   76 CONTINUE
+   73 CONTINUE
+      IMIN=IJN(JB)
+      IMAX=IJX(JB)
+      DO 55 ID=IMIN,IMAX
+      EX=EM(ID)
+      IF(EX.GE.EO(1,4)) GO TO 56
+      IF(EX.LE.EO(1,1)) GO TO 55
+      IF(EX.LE.EO(1,2)) GO TO 57
+      IF(EX.LT.EO(1,3)) GO TO 58
+      FAC=C3*(EX-EO(1,4))**2
+      VAC=FAC*(EO(1,4)-EX)
+      ELC(ID)=ELC(ID)+1.0-VAC
+      FERV(ID)=FERV(ID) +FAC*PLAS
+      SFER(ID)=SFER(ID)+FAC*SRPLAS
+      DOS(1,ID)=DOS(1,ID)+FAC
+      DO 93 L=2,IAT
+      UPD=EO(L,4)+(EX-EO(1,4))*S3(L)
+      IF(UPD.GE.0.0) GO TO 593
+      WRITE(6,693) II,JJ,KK,N,L,UPD
+      WRITE(6,793) (EO(1,LL),LL=1,4),EX
+      WRITE(6,793) (EO(L,LL),LL=1,4),S3(L)
+  693 FORMAT(' E3<E<E4',5I3,F10.5)
+  793 FORMAT(1X,6F9.5)
+  593 CONTINUE
+      DOS(L,ID)=DOS(L,ID)+FAC*UPD
+   93 CONTINUE
+      GO TO 55
+   58 CONTINUE
+      VAC2=(EX-EO(1,1))**2
+      VAC0=VAC2*(EX-EO(1,1))
+      VAC1=(EX-EO(1,2))**3
+      VAC=V0*VAC0+V1*VAC1+V2*VAC2
+      ELC(ID)=ELC(ID)+VAC
+      FAC=(EO(1,3)-EX)*(EX-EO(1,1))*C1 + (EO(1,4)-EX)*(EX-EO(1,2))*C2
+      FERV(ID)=FERV(ID) +FAC*PLAS
+      SFER(ID)=SFER(ID)+FAC*SRPLAS
+      DOS(1,ID)=DOS(1,ID)+FAC
+      DO 92 L=2,IAT
+      ASBAR=(EO(1,3)-EX)*S1(L)+(EX-EO(1,2))*S2(L)
+      UPD=EO(L,1)+ASBAR
+      IF(UPD.GE.0.0) GO TO 592
+      WRITE(6,692) II,JJ,KK,N,L,UPD,ASBAR
+      WRITE(6,793) (EO(1,LL),LL=1,4),EX
+      WRITE(6,793) (EO(L,LL),LL=1,4),S1(L),S2(L)
+  692 FORMAT(' E2<E<E3',5I3,2F10.5)
+  592 CONTINUE
+      DOS(L,ID)=DOS(L,ID)+FAC*UPD
+   92 CONTINUE
+      GO TO 55
+   57 CONTINUE
+      FAC=C0*(EX-EO(1,1))**2
+      VAC=FAC*(EX-EO(1,1))
+      ELC(ID)=ELC(ID)+VAC
+      FERV(ID)=FERV(ID) +FAC*PLAS
+      SFER(ID)=SFER(ID)+FAC*SRPLAS
+      DOS(1,ID)=DOS(1,ID)+FAC
+      DO 91 L=2,IAT
+      UPD=EO(L,1)+(EX-EO(1,1))*S0(L)
+      IF(UPD.GE.0.0) GO TO 591
+      WRITE(6,691) II,JJ,KK,N,L,UPD
+      WRITE(6,793) (EO(1,LL),LL=1,4),EX
+      WRITE(6,793) (EO(L,LL),LL=1,4),S0(L)
+  691 FORMAT(' E1<E<E2',5I3,F10.5)
+      STOP
+  591 CONTINUE
+      DOS(L,ID)=DOS(L,ID)+FAC*UPD
+   91 CONTINUE
+      GO TO 55
+   56 CONTINUE
+      ELC(ID)=ELC(ID)+1.0
+   55 CONTINUE
+   80 CONTINUE
+   70 CONTINUE
+  100 CONTINUE
+      IF (ISTR .EQ.1) V=ALAT**3/2.0
+      IF (ISTR .EQ.2) V=ALAT**3/4.0
+      IF (ISTR .EQ.3.AND.ISTRU.EQ.1) V=ALAT**3/2.0
+      IF (ISTR .EQ.3.AND.ISTRU.EQ.2) V=ALAT**3/4.0
+      IF (ISTR .EQ.3.AND.ISTRU.EQ.3) V=ALAT**3
+      DO 120 I=1,NPTS
+C     CONVERTS  TO CM/SEC
+      IF (DOS(1,I).GT.0.0D+0) FERV(I)=FERV(I)*1.1964/DOS(1,I)
+      FERV(I)=SQRT(FERV(I))
+      IF (DOS(1,I).GT.0.0D+0) SFER(I)=SFER(I)*1.0938/DOS(1,I)
+ 120  CONTINUE
+      FAC=6.0/(MESH2**3)
+      DO 110 J=1,IAT
+      DO 110 I=1,NPTS
+      DOS(J,I)=FAC*DOS(J,I)
+      OMEGA(I)=50.916714*FERV(I)*(DOS(1,I)/(2.0*V))**0.5
+  110 CONTINUE
+      FAC= 2.0/(MESH2**3)
+      DO 111 J=1,NPTS
+  111 ELC(J)=FAC*ELC(J)
+      ELEC(1)=0.0
+      DO 115 I=2,NPTS
+      ELEC(I)=ELEC(I-1)+0.5*(EM(I)-EM(I-1))*(DOS(1,I-1)+DOS(1,I))
+  115 CONTINUE
+      WRITE(15,623) TITLE
+      NG= NPTS/55 + 1
+      DO 200  I=1,NG
+      WRITE(20,623)TITLE
+  623 FORMAT(A40)
+      WRITE(20,620)
+  620 FORMAT(        1X,'CELL',5X,'ENERGY',5X,'S1',9X,'P1',9X,'D1',
+     $ 9X,'F1',9X,'S2',9X,'P2',9X,'D2',9X,'F2',6X,'DENSITY',3X,
+     $ 'TOTAL NUMBER',/)
+      NTOP= I*55
+      NBOT= NTOP - 54
+      DO 200  J=NBOT,NTOP
+      IF(J.GT.NPTS) GO TO 200
+      WRITE(20,630)J,EM(J),(DOS(L,J),L=2,IAT),DOS(1,J),ELEC(J),ELC(J)
+C     FOR DIATOMIC MATERIALS CHANGE formats
+  630 FORMAT(1X,I4,F8.4,16f10.5,/2F7.3)
+C 630 FORMAT(1X,I4,F8.4,11f10.5,/2F7.3)  Aug 05
+      WRITE(15,640) J,EM(J), DOS(1,J),ELC(J),FERV(J),SFER(J),OMEGA(J)
+  640 FORMAT(I5,6F10.4)
+      WRITE(19,650) J,EM(J),ELC(J),DOS(1,J),(DOS(L,J),L=2,IAT)
+  650 FORMAT(I5,20F10.4)
+      write(21,'(13f10.5)') em(j),elc(j),(dos(l,j),l=1,iat)
+      if(iat.eq.6)WRITE(15,644) (DOS(L,J),L=2,IAT)
+      if(iat.eq.11)WRITE(15,645) (DOS(L,J),L=2,IAT)
+      if(iat.eq.16)WRITE(15,646) (DOS(L,J),L=2,IAT)
+  646 FORMAT(5F10.5,/5f10.5,/5f10.5)
+  645 FORMAT(5F10.5,/5f10.5)
+  644 FORMAT(5F10.4)
+  200 CONTINUE
+      DO 201  I=1,NG
+      WRITE(20,621)
+  621 FORMAT(1X,'CELL',5X,'ENERGY',5X,'FERV',9X,'SFER',9X,'OMEGA'
+     1,6X,'DENSITY',3X,'TOTAL NUMBER',/)
+      NTOP= I*55
+      NBOT= NTOP - 54
+      DO 201  J=NBOT,NTOP
+      IF(J.GT.NPTS) GO TO 201
+      WRITE(20,631) J,EM(J),FERV(J),SFER(J),OMEGA(J),DOS(1,J),ELC(J)
+  631 FORMAT(1X,I5,F11.4,5E13.6)
+  201 CONTINUE
+C INTERPOLATE INPUT DATA TO FIND FERMI ENERGY,TOTAL DOS AT EF, AND
+C   COMPONENT ENERGIES AT EF
+ 1989 DO 4090 L=1,J
+        DOS1(L)=DOS(1,L)
+        DOS2(L)=DOS(2,L)
+        DOS3(L)=DOS(3,L)
+        DOS4(L)=DOS(4,L)
+        DOS5(L)=DOS(5,L)
+        DOS6(L)=DOS(6,L)
+        DOS7(L)=DOS(7,L)
+        DOS8(L)=DOS(8,L)
+        DOS9(L)=DOS(9,L)
+        DOS10(L)=DOS(10,L)
+        DOS11(L)=DOS(11,L)
+        DOS12(L)=DOS(12,L)
+        DOS13(L)=DOS(13,L)
+        DOS14(L)=DOS(14,L)
+        DOS15(L)=DOS(15,L)
+        DOS16(L)=DOS(16,L)
+ 4090 CONTINUE
+      MCOUNT=0
+      DO 4080 L=1,(J-1)
+        IF (ELC(L).GE.NUMELEC) GOTO 178
+        GOTO 4080
+ 178    IF (MCOUNT.NE.0) GOTO 4080
+        MCOUNT=L
+ 4080 CONTINUE
+C     LINEAR INTERPOLATION OF THE FERMI LEVEL
+      S=NUMELEC
+      MCM = MCOUNT - 1
+C     WRITE(*,*)'S=',S,' MCM=',MCM,' ELC=',ELC,' EM=',EM
+      EFL = INTERP(S,ELC,EM,MCM,2)
+C     WRITE(*,*)'S=',S,' MCM=',MCM,' ELC=',ELC,' EM=',EM
+      DNORFL=INTERP(S,ELC,DOS1,MCM,2)
+c  Fermi Velocity
+      DFERV=INTERP(S,ELC,FERV,MCM,2)
+c     DFERV=INTERP(S,ELC,SFER,MCM,2)
+c  Plasmon Energy
+      DOMEG=INTERP(S,ELC,OMEGA,MCM,2)
+      DENSFL(1)=INTERP(S,ELC,DOS2,MCM,2)
+      DENSFL(2)=INTERP(S,ELC,DOS3,MCM,2)
+      DENSFL(3)=INTERP(S,ELC,DOS4,MCM,2)
+      DENSFL(4)=INTERP(S,ELC,DOS5,MCM,2)
+      DENSFL(5)=INTERP(S,ELC,DOS6,MCM,2)
+      DENSFL(6)=INTERP(S,ELC,DOS7,MCM,2)
+      DENSFL(7)=INTERP(S,ELC,DOS8,MCM,2)
+      DENSFL(8)=INTERP(S,ELC,DOS9,MCM,2)
+      DENSFL(9)=INTERP(S,ELC,DOS10,MCM,2)
+      DENSFL(10)=INTERP(S,ELC,DOS11,MCM,2)
+      DENSFL(11)=INTERP(S,ELC,DOS12,MCM,2)
+      DENSFL(12)=INTERP(S,ELC,DOS13,MCM,2)
+      DENSFL(13)=INTERP(S,ELC,DOS14,MCM,2)
+      DENSFL(14)=INTERP(S,ELC,DOS15,MCM,2)
+      DENSFL(15)=INTERP(S,ELC,DOS16,MCM,2)
+      WRITE(13,500) TITLE,IATOM
+c  Writes Fermi velocity and Plasmon energy   9 Aug 2011
+      WRITE(13,971) EFL,DNORFL,(DENSFL(I),I=1,5)
+      WRITE(14,972) EFL,DNORFL,(DENSFL(I),I=1,5),DFERV,DOMEG
+      IF (IAT1.GT.10)
+     1WRITE(13,971) EFL,DNORFL,(DENSFL(I),I=6,10)
+      IF (IAT1.GT.10)
+     1WRITE(14,972) EFL,DNORFL,(DENSFL(I),I=6,10),DFERV,DOMEG
+      IF (IAT1.EQ.16)
+     1WRITE(13,971) EFL,DNORFL,(DENSFL(I),I=11,15)
+      IF (IAT1.EQ.16)
+     1WRITE(14,972) EFL,DNORFL,(DENSFL(I),I=11,15),DFERV,DOMEG
+  971 FORMAT(7F10.5)
+  972 FORMAT(9F10.5)
+      RETURN
+      END
+      REAL*8 FUNCTION INTERP(XX,X,F,J1,N)
+      IMPLICIT REAL*8(A-H,O-Z)
+      dimension X(9000),F(9000)
+c     REAL X(700),F(700)
+c     DOUBLE PRECISION FX,P
+      FX=0.
+      ISTART=J1-N+N/2+1
+      J2=ISTART+N-1
+      DO 10 J=ISTART,J2
+        P=F(J)
+        DO 5 I=ISTART,J2
+          IF(I.EQ.J) GOTO 5
+          P=P*(XX-X(I))/(X(J)-X(I))
+  5     CONTINUE
+  10  FX=FX+P
+      INTERP = FX
+      RETURN
+      END

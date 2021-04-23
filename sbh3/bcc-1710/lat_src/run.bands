@@ -1,0 +1,53 @@
+#!/bin/bash
+
+i=7.0
+
+cp -r  bands bands-1
+
+cp INFILE.bands INFILE
+sed -i "5 c\ $i " INFILE
+sed -i "39 c\ -1.000     3.000" INFILE
+ 
+./lapw.com
+
+cp ../bands_src/bandplot . 
+
+EF=$(head -1 ferv_omega | awk '{print $1}')
+cat > bandplot.in << EOF
+SbH_3  BCC $i
+1
+QLMT                                         ! Input file
+PRIMITIVE VECTORS OF THE DIRECT LATTICE
+  0.5  0.5 -0.5
+  0.5 -0.5  0.5
+ -0.5  0.5  0.5
+Number of band to be ploted, maximum eigenvalue
+ 9 100
+Fermi energy (Ry)
+ $EF
+Enter the number of k-directions in the Brillouin zone
+ 7                                               ! k-directions in the Brillouin zone
+ 51                                             !number of k-point in the  1 direction
+ 51                                             !number of k-point in the  2 direction
+ 51                                             !number of k-point in the  3 direction
+ 51                                             !number of k-point in the  4 direction
+ 51                                             !number of k-point in the  5 direction
+ 51                                             !number of k-point in the  5 direction
+ 51                                             !number of k-point in the  5 direction
+banddata                                       ! Output file -donot change the title
+bandplot.gnu                                    ! Output gnuplot file
+
+EOF
+
+./bandplot
+gnuplot bandplot.gnu
+
+mv INFILE INFILE.bands
+mv QLMT QLMT.bands
+mv INFO INFO.bands
+
+rm lapw4at-$i
+
+
+
+

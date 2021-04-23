@@ -1,0 +1,26 @@
+#!bin/bash
+
+for i in $(seq 5.6 0.2 8.2)
+do 
+cd lat$i/dos/
+cat> dosdat.out << EOF
+   11    4  101
+Sb  H3                                      2
+  8.00 54.00
+   1   1
+   $i         1    2
+    8    9   11    1    0
+  -3.00000   0.00200   5.00000   0.00000   0.00000   0.00000   0.00000
+EOF
+
+./dosapwn
+
+
+gnuplot dosplot.gnu
+cd ../../
+done
+
+
+
+
+

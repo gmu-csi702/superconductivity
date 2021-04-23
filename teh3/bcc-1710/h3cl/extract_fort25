@@ -1,0 +1,32 @@
+#!/bin/bash
+
+el="Te"
+rm extracted-h3$el.txt
+title=( "l" "SIN"  "DOS-PRODUCT" "ETA" "rs" "ef"  "nef" ) 
+n=2
+
+for i in ${!title[@]}  
+do 
+  col=${title[$i]}
+  printf "\ncol=$col\n" >> extracted-h3$el.txt
+  printf "a \t $el-l=0 $el-l=1 $el-l=2 H-l=0 \n" >> extracted-h3$el.txt
+  echo "getting $col ..."
+ 
+  l=54
+  for lat in $(seq 5.4 0.2 7.2 )
+  do
+	  if [ -e "gyo-$l" ]; then
+		
+		  path="gyo-$l"
+		  printf "$lat \t" >> extracted-h3$el.txt
+		  awk -v x=$n '{print $x }' $path/fort.25 | head -n 4 | paste -s >> extracted-h3$el.txt
+          fi
+    l=$(( $l + 2 ))	  
+  done
+ 
+
+  n=$(( $n + 1 ))
+
+done
+
+

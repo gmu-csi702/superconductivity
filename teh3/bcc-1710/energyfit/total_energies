@@ -1,0 +1,30 @@
+#!/bin/bash
+
+#Extract the converged eneries for each 
+#lattice constant and plot 
+#Total Energy vs Lattice constant.
+#Fits additional points for total energy 
+#and pressure and plots
+
+rm efile
+#set path to directories for calculations 
+#for the range of lattice constants
+path="../"
+
+#the sequence should include lattice constants 
+#already calculated
+#lat = 5.4
+for i in $(seq 54 2 84)
+do
+	if [ -e $path"lat"$i/energy.$i ]; then
+		echo "$i $( tail -n 1 $path"lat"$i/energy.$i )" >> efile 
+	fi
+#  lat=$(( $lat + 0.2 ))
+done
+
+awk  '{print $1,$6 }' efile > etot.teh3    
+
+rm efile
+rm *out*
+
+

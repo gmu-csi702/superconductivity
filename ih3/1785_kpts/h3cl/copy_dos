@@ -1,0 +1,19 @@
+#!/bin/bash
+
+el=ih3
+
+mkdir -p dosplots_$el
+
+for i in $(seq 6.2 0.1 7.4)
+do
+	if [ -e gyo-$i ]; then
+		cp gyo-$i/dosdatall.eps dosplots_$el/dosdatall.$i.eps
+		cp gyo-$i/dosdattotal.eps dosplots_$el/dosdattotal.$i.eps
+		cp gyo-$i/dosdats.eps dosplots_$el/dosdats.$i.eps
+		cp gyo-$i/dosdatp.eps dosplots_$el/dosdatp.$i.eps
+		cp gyo-$i/dosdatd.eps dosplots_$el/dosdatd.$i.eps
+		cp gyo-$i/dosdatsp.eps dosplots_$el/dosdatsp.$i.eps
+		cp gyo-$i/dosdatang.eps dosplots_$el/dosdatang.$i.eps
+  	fi 
+done
+

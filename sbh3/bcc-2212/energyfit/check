@@ -1,0 +1,11 @@
+#!/bin/bash
+for i in $(seq 7.0 0.2 8.4)
+do
+ echo "$i $(grep 'TOTAL ENERGY=' ../run_0/"lat"$i/INFO.iter | tail -n1)">>efile 
+done
+
+awk  '{print $1,$5 }' efile > etot.sbh3    
+
+
+
+

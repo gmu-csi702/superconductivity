@@ -1,0 +1,64 @@
+#!/bin/bash
+
+# read in omega from the file as a 2D array
+declare -a myarray
+readarray myarray < h3s_freq 
+
+
+m1=121.75
+m2=1.0079
+
+cpath=`pwd`
+# H3Sb   omega^2=CBV^(1/3)  from H3S Duan 
+
+#omg1=615.
+#omg2=1840.
+#omg_log=1334.6
+#declare -a omg1=("2087.57" "1840.  " "1622.55" "1430.83" "1261.11" "1110.23" "975.47" "854.50" "745.28" "645.98") 
+#declare -a omg2=("697.75" "615   " "542.32" "478.23" "421.51" "371.08" "326.04" "285.60" "249.10" "215.91") 
+
+l=0
+for i in $(seq 5.6 0.1 8.1) 
+do
+    #[modify]	
+    gyo_path="gyo-"$i
+    echo $gyo_path
+    cd $gyo_path
+
+    omg1=`printf "${myarray[l]}" |awk '{print $3}'`
+    omg2=`printf "${myarray[l]}" |awk '{print $2}'`
+    omg_log=`printf "${myarray[l]}" |awk '{print $1}'`
+    echo $i"  "$omg1"  "$omg2"   "$omg_log
+
+    head -n2 dosapw.itp > dos.in
+    echo "   $m1    $omg1     0.10    $omg_log">> dos.in
+    tail -n1 dosapw.itp >>  dos.in
+    echo "   $m2   $omg2     0.10    $omg_log" >> dos.in
+
+     ./gyond  >/dev/null 
+
+    grep -a LAMDTOT gyo1.out  >>  $cpath'/LAMDATOT_tmp'
+    grep -a TC      gyo1.out  >>  $cpath'/TC_tmp'
+    grep -a OMEGA gyo1.out |paste -sd" " >> $cpath'/omg_tmp'
+    grep -a NEF gyo1.out |paste -sd" " >> $cpath'/NEF_tmp'
+    grep -a ETA gyo1.out  #|paste -sd" " >> $cpath'/NEF_tmp'
+
+
+    l=$(( $l + 1 ))
+    cd $cpath
+done
+
+paste LAMDATOT_tmp TC_tmp omg_tmp  NEF_tmp >  LAMDA_TC_0
+sed -i 's/=/= /g' LAMDA_TC_0 
+sed -i 's/,/ /g' LAMDA_TC_0 
+awk '{print $1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$10" "$11" "$12" "$13  }' LAMDA_TC_0 > LAMDA_TC
+#awk '{print $1" "$2" "$3" " $4"  "$5" "$6 }' LAMDA_TC_0 > LAMDA_TC
+
+#awk '{print " "$1"       ""     ""     "$5}' LAMDA_TC_0 |tail -1 >  LAMDA_TC
+#awk '{print "     "$2" "$3" "$4"     "$6}' LAMDA_TC_0 >> LAMDA_TC
+
+
+
+rm LAMDATOT_tmp TC_tmp omg_tmp  NEF_tmp  LAMDA_TC_0
+
+cat LAMDA_TC

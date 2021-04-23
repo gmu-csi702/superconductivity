@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# This script runs the lapw codes to generate 
+#the DOS plots, band plots and calculate the 
+#Hopefiled parametersfor diferent lattice constants.
+#IT uses the combination specific input files in
+#the directory lat_src and additional files in 
+#dos_src(for DOS calculations), bands_src(for bad plots)
+#and gyo_src (for the Hopefield parameter).
+# The input files(INFILE,CDN1) in lat_src need to be 
+#modifed for each specific combination of XH_3
+
+
+el="IH_3" #title for DOS plots
+pt=18 #for proper positioning or the label in the DOS plots
+#rm e_fermi #fermi level for each lattice constant
+
+#loop over the lattice constants of interest
+for i in $(seq 5.5 0.1 5.9)
+do
+  sed -i "2 c\i=$i " run.lapw.lat 
+  sed -i "3 c\el=$el " run.lapw.lat 
+  sed -i "4 c\pt=$pt " run.lapw.lat 
+  
+ ./run.lapw.lat >&log.$i&
+
+ pt=`expr $pt + 2`
+
+done
+
+
+
+

@@ -1,0 +1,32 @@
+#!bin/bash
+
+for i in $(seq 5.4 0.1 8.6)
+do 
+cd lat$i/dos/
+
+
+cat>ef.gnu << EOF
+# Name: dosplot.gnu
+# Objective: plot density of states 
+
+
+EF =system("head -1 ferv_omega | awk '{print $1}'")
+EF = EF+0
+
+
+
+
+set print "../../e_fermi" append
+print $i, "\t" , EF 
+EOF
+
+
+gnuplot ef.gnu
+rm ef.gnu
+cd ../../
+done
+
+
+
+
+

@@ -1,0 +1,30 @@
+#!/bin/bash
+i=6.4
+
+cp -r  bands bands-1
+cp INFILE.bands INFILE
+
+
+head -n 39 INFILE.dos | tail -n 1 > line
+sed -i '39d;38r line' INFILE
+
+cp ~/lapw/lapw4at  lapw4at-$i
+./lapw.com
+
+rm line
+mv INFILE INFILE.bands.correct
+mv INFO INFO.bands.correct
+mv QLMT bands/.
+
+rm lapw4at-$i
+cd bands/
+
+./bandplot
+gnuplot bandplot.gnu
+
+cd ../
+
+
+
+
+

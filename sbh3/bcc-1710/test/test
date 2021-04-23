@@ -1,0 +1,7 @@
+#!/bin/bash
+
+cp INFILE.bands INFILE
+
+head -n 39 INFILE.dos | tail -n 1 > line
+
+sed -i '39d;38r line' INFILE

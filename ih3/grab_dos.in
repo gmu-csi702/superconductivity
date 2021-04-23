@@ -1,0 +1,11 @@
+#!/bin/bash
+
+rm -rf dos.in.all
+rm -rf dos.in.0
+rm -rf col
+for i in $(seq 5.5 0.1 8.6)
+do
+	head -n 5 lat$i/gyo/dos.in | sed '/I /d' | sed -n '2~2p'  >> dos.in.all
+done
+
+

@@ -1,0 +1,24 @@
+#!/bin/bash
+
+i=7.0
+ 
+#cdn1=$(ls -t CDN* | head -1)
+
+#mv CDN1 CDN1.iter
+#mv $cdn1 CDN1
+#mv INFILE  INFILE.iter
+#mv INFO INFO.iter
+
+cp INFILE.run INFILE
+
+sed -i "5 c\ $i " INFILE
+sed -i "39 c\ -0.200     5.000" INFILE
+ 
+cp ~/lapw/lapw4at lapw4at-$i
+sed -i "3 c\ ~/lapw/sbh3/bcc-1710/lat$i/lapw4at-$i  > /dev/null" lapw.com 
+./lapw.com
+
+#rm lapw4at-$i
+
+cp INFILE INFILE.dos
+cp INFO INFO.dos

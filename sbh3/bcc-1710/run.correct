@@ -1,0 +1,64 @@
+#!/bin/bash
+
+el="SbH_3" #title for DOS plots
+
+echo " Correcting DOS Plots"
+
+pt=12 #for proper positioning of the label in the DOS plots
+for i in $(seq 5.6 0.1 6.7)
+do
+	cd lat$i/dos/
+	cp ../../dos.correct  .
+        sed -i "3 c\el=$el " dos.correct 
+        sed -i "4 c\pt=$pt " dos.correct
+        ./dos.correct
+        rm dos.correct
+        cd ../../	 
+done
+
+pt=22 #for proper positioning of the label in the DOS plots
+for i in $(seq 6.8 0.1 7.5)
+do
+	cd lat$i/dos/
+	cp ../../dos.correct .
+        sed -i "3 c\el=$el " dos.correct 
+        sed -i "4 c\pt=$pt " dos.correct
+        ./dos.correct
+        rm dos.correct
+        cd ../../	 
+done
+
+pt=25 #for proper positioning of the label in the DOS plots
+for i in $(seq 7.6 0.1 8.1)
+do
+	cd lat$i/dos/
+	cp ../../dos.correct .
+        sed -i "3 c\el=$el " dos.correct 
+        sed -i "4 c\pt=$pt " dos.correct
+        ./dos.correct
+        rm dos.correct
+        cd ../../	 
+done
+
+echo "Done DOS Plots"
+
+echo "Starting Bands Correction ..."
+
+#loop over the lattice constants of interest
+for i in $(seq 5.7 0.1 6.8)
+do
+	cd lat$i/
+	cp ../bands.correct .
+        sed -i "2 c\i=$i " bands.correct 
+        ./bands.correct
+        
+        rm bands.correct	
+
+	cd ../
+
+	echo "Done bands for lat-$i"
+done
+
+echo "Done corrections."
+
+
